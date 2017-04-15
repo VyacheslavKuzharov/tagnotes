@@ -1,0 +1,27 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    container_name: tagnotes_postgres
+    ports:
+      - '5433:5432'
+    env_file:
+      - 'config/application.yml'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  app:
+    build: .
+    container_name: tagnotes_app
+    volumes:
+      - .:/tag_notes
+    entrypoint: ["./stop-server.sh"]
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    env_file:
+      - 'config/application.yml'
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+volumes:
+  postgres-data:
+    driver: local
